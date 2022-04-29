@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.webkit.WebResourceErrorCompat;
 import androidx.webkit.WebViewClientCompat;
+import android.view.View;
 
 /**
  * Host api implementation for {@link WebViewClient}.
@@ -134,6 +135,7 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
         flutterApi.onPageStarted(this, view, url, reply -> {});
       }
     }
+
 
     @Override
     public void onPageFinished(WebView view, String url) {

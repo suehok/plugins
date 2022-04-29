@@ -57,6 +57,9 @@ typedef NavigationDelegate = FutureOr<NavigationDecision> Function(
 /// Signature for when a [WebView] has started loading a page.
 typedef PageStartedCallback = void Function(String url);
 
+/// Signature for when a [WebView] has started loading a page.
+typedef ScrollYChangedCallback = void Function(double y);
+
 /// Signature for when a [WebView] has finished loading a page.
 typedef PageFinishedCallback = void Function(String url);
 
@@ -88,6 +91,7 @@ class WebView extends StatefulWidget {
     this.navigationDelegate,
     this.gestureRecognizers,
     this.onPageStarted,
+    this.onScrollYChanged,
     this.onPageFinished,
     this.onProgress,
     this.onWebResourceError,
@@ -223,6 +227,7 @@ class WebView extends StatefulWidget {
   /// Invoked when a page starts loading.
   final PageStartedCallback? onPageStarted;
 
+
   /// Invoked when a page has finished loading.
   ///
   /// This is invoked only for the main frame.
@@ -237,6 +242,9 @@ class WebView extends StatefulWidget {
 
   /// Invoked when a page is loading.
   final PageLoadingCallback? onProgress;
+
+  final ScrollYChangedCallback? onScrollYChanged;
+
 
   /// Invoked when a web resource has failed to load.
   ///
@@ -467,6 +475,13 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   void onPageStarted(String url) {
     if (_widget.onPageStarted != null) {
       _widget.onPageStarted!(url);
+    }
+  }
+
+  @override
+  void onScrollYChanged(double y) {
+    if (_widget.onScrollYChanged != null) {
+      _widget.onScrollYChanged!(y);
     }
   }
 

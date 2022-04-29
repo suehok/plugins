@@ -1810,6 +1810,7 @@ abstract class WebChromeClientFlutterApi {
 
   void dispose(int instanceId);
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress);
+  void onScrollYChanged(int instanceId, int webViewInstanceId, double progress);
   static void setup(WebChromeClientFlutterApi? api,
       {BinaryMessenger? binaryMessenger}) {
     {
@@ -1852,7 +1853,38 @@ abstract class WebChromeClientFlutterApi {
           final int? arg_progress = (args[2] as int?);
           assert(arg_progress != null,
               'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onProgressChanged was null, expected non-null int.');
+          print("dev.flutter.pigeon.WebChromeClientFlutterApi.onProgressChanged" + arg_progress.toString());
+
           api.onProgressChanged(
+              arg_instanceId!, arg_webViewInstanceId!, arg_progress!);
+          return;
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WebChromeClientFlutterApi.onScrollYChanged',
+          codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onScrollYChanged was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = (args[0] as int?);
+          assert(arg_instanceId != null,
+          'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onScrollYChanged was null, expected non-null int.');
+          final int? arg_webViewInstanceId = (args[1] as int?);
+          assert(arg_webViewInstanceId != null,
+          'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onScrollYChanged was null, expected non-null int.');
+          final double? arg_progress = (args[2] as double?);
+          assert(arg_progress != null,
+          'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onScrollYChanged was null, expected non-null double.');
+          print("dev.flutter.pigeon.WebChromeClientFlutterApi.onScrollYChanged" + arg_progress.toString());
+
+          api.onScrollYChanged(
               arg_instanceId!, arg_webViewInstanceId!, arg_progress!);
           return;
         });

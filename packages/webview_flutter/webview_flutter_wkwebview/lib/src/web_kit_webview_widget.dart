@@ -121,6 +121,9 @@ class WebKitWebViewPlatformController extends WebViewPlatformController {
         ..setDidStartProvisionalNavigation((WKWebView webView, String? url) {
           callbacksHandler.onPageStarted(url ?? '');
         })
+         ..setDidScrollYChanged((WKWebView webView, double? url) {
+          callbacksHandler.onScrollYChanged(url ?? '');
+        })
         ..setDidFinishNavigation((WKWebView webView, String? url) {
           callbacksHandler.onPageFinished(url ?? '');
         })

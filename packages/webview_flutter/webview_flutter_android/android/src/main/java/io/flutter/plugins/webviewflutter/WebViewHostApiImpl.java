@@ -21,6 +21,8 @@ import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeCli
 import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.ReleasableWebViewClient;
 import java.util.HashMap;
 import java.util.Map;
+import android.util.Log;
+import android.view.ViewTreeObserver;
 
 /**
  * Host api implementation for {@link WebView}.
@@ -37,7 +39,8 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   private final WebViewProxy webViewProxy;
   // Only used with WebView using virtual displays.
   @Nullable private final View containerView;
-
+  @Nullable private WebChromeClientFlutterApiImpl flutterApi;
+  @Nullable private WebChromeClientHostApiImpl webChromeClientHostApiImpl;
   private Context context;
 
   /** Handles creating and calling static methods for {@link WebView}s. */
@@ -70,6 +73,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
      * @param enabled whether debugging should be enabled
      */
     public void setWebContentsDebuggingEnabled(boolean enabled) {
+
       WebView.setWebContentsDebuggingEnabled(enabled);
     }
   }
@@ -102,7 +106,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   }
 
   /** Implementation of {@link WebView} that can be used as a Flutter {@link PlatformView}s. */
-  public static class WebViewPlatformView extends WebView implements PlatformView, Releasable {
+  public static class WebViewPlatformView extends WebView implements PlatformView, Releasable  {
     private final ReleasableValue<WebViewClientHostApiImpl.ReleasableWebViewClient>
         currentWebViewClient = new ReleasableValue<>();
     private final ReleasableValue<DownloadListenerImpl> currentDownloadListener =
@@ -119,6 +123,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
      */
     public WebViewPlatformView(Context context) {
       super(context);
+
     }
 
     @Override
@@ -134,14 +139,33 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     @Override
     public void setWebViewClient(WebViewClient webViewClient) {
       super.setWebViewClient(webViewClient);
+
       currentWebViewClient.set((ReleasableWebViewClient) webViewClient);
 
       final WebChromeClientImpl webChromeClient = currentWebChromeClient.get();
       if (webChromeClient != null) {
         ((WebChromeClientImpl) webChromeClient).setWebViewClient(webViewClient);
       }
+
+
+
     }
 
+//    @Override
+//    public void setOnScrollChangeListener(View.OnScrollChangeListener   listener){
+//      Log.d("WebViewHostApiImpl", "setOnScrollChangeListener " );
+//
+//    }
+//    @Override
+//    public void setOnScrollChangeListener(View.OnScrollChangeListener   listener){
+//        super.setOnScrollChangeListener(listener);
+//      this.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+//        @Override
+//        public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+//          Log.d("TAG", "onScrollChange " + scrollY);
+//        }
+//      });
+//    }
     @Override
     public void setDownloadListener(DownloadListener listener) {
       super.setDownloadListener(listener);
@@ -153,6 +177,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
       super.setWebChromeClient(client);
       currentWebChromeClient.set((WebChromeClientImpl) client);
     }
+
 
     @SuppressLint("JavascriptInterface")
     @Override
@@ -306,16 +331,21 @@ public class WebViewHostApiImpl implements WebViewHostApi {
    * @param webViewProxy handles creating {@link WebView}s and calling its static methods
    * @param context an Activity Context to access application assets. This value cannot be null.
    * @param containerView parent of the webView
+   * @param WebChromeClientFlutterApiImpl parent of the flutterApi
    */
   public WebViewHostApiImpl(
       InstanceManager instanceManager,
       WebViewProxy webViewProxy,
       Context context,
-      @Nullable View containerView) {
+      @Nullable View containerView,
+      WebChromeClientFlutterApiImpl flutterApi,
+      WebChromeClientHostApiImpl webChromeClientHostApiImpl) {
     this.instanceManager = instanceManager;
     this.webViewProxy = webViewProxy;
     this.context = context;
     this.containerView = containerView;
+    this.flutterApi = flutterApi;
+    this.webChromeClientHostApiImpl = webChromeClientHostApiImpl;
   }
 
   /**
@@ -333,6 +363,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     DisplayManager displayManager =
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
+    Log.d("WebViewHostApiImpl", "create  " );
 
     final WebView webView =
         useHybridComposition
@@ -340,8 +371,21 @@ public class WebViewHostApiImpl implements WebViewHostApi {
             : webViewProxy.createInputAwareWebView(context, containerView);
 
     displayListenerProxy.onPostWebViewInitialization(displayManager);
+    webView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+      @Override
+      public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+        Log.d("WebViewHostApiImpl", "onScrollChange " + scrollY);
+        final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+
+        if (flutterApi != null) {
+          flutterApi.onScrollYChanged(webChromeClientHostApiImpl.webChromeClientCreator.webChromeClientImpl, webView, (double) scrollY, reply -> {});
+        }
+      }
+    });
+
     instanceManager.addInstance(webView, instanceId);
   }
+
 
   @Override
   public void dispose(Long instanceId) {
@@ -367,7 +411,16 @@ public class WebViewHostApiImpl implements WebViewHostApi {
       String mimeType,
       String encoding,
       String historyUrl) {
-    final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+    Log.d("TAG", "loadDataWithBaseUrl " + baseUrl);
+
+    final ObservableWebView webView = (ObservableWebView) instanceManager.getInstance(instanceId);
+
+
+    ((ObservableWebView) webView).setOnScrollChangedCallback(new ObservableWebView.OnScrollChangedCallback() {
+      public void onScroll(int x, int y, int oldx, int oldy) {
+        Log.d("TAG", "onScrollChange " + y);
+      }
+    });
     webView.loadDataWithBaseURL(
         parseNullStringIdentifier(baseUrl),
         data,
@@ -425,6 +478,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     webView.reload();
   }
 
+
   @Override
   public void clearCache(Long instanceId, Boolean includeDiskFiles) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
@@ -473,6 +527,11 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   public void setWebContentsDebuggingEnabled(Boolean enabled) {
     webViewProxy.setWebContentsDebuggingEnabled(enabled);
   }
+
+  public void onScrollChanged(){
+
+  }
+
 
   @Override
   public void setWebViewClient(Long instanceId, Long webViewClientInstanceId) {

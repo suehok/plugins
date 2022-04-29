@@ -22,6 +22,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebSettingsHost
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebStorageHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
+import android.util.Log;
 
 /**
  * Java platform implementation of the webview_flutter plugin.
@@ -34,6 +35,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   private FlutterPluginBinding pluginBinding;
   private WebViewHostApiImpl webViewHostApi;
   private JavaScriptChannelHostApiImpl javaScriptChannelHostApi;
+  private WebChromeClientHostApiImpl webChromeClientHostApiImpl;
 
   /**
    * Add an instance of this to {@link io.flutter.embedding.engine.plugins.PluginRegistry} to
@@ -80,9 +82,16 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
     viewRegistry.registerViewFactory(
         "plugins.flutter.io/webview", new FlutterWebViewFactory(instanceManager));
 
+    webChromeClientHostApiImpl =  new WebChromeClientHostApiImpl(
+            instanceManager,
+            new WebChromeClientHostApiImpl.WebChromeClientCreator(),
+            new WebChromeClientFlutterApiImpl(binaryMessenger, instanceManager));
+
     webViewHostApi =
         new WebViewHostApiImpl(
-            instanceManager, new WebViewHostApiImpl.WebViewProxy(), context, containerView);
+            instanceManager, new WebViewHostApiImpl.WebViewProxy(), context, containerView,
+                new WebChromeClientFlutterApiImpl(binaryMessenger, instanceManager), webChromeClientHostApiImpl);
+
     javaScriptChannelHostApi =
         new JavaScriptChannelHostApiImpl(
             instanceManager,
@@ -99,11 +108,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
             new WebViewClientHostApiImpl.WebViewClientCreator(),
             new WebViewClientFlutterApiImpl(binaryMessenger, instanceManager)));
     WebChromeClientHostApi.setup(
-        binaryMessenger,
-        new WebChromeClientHostApiImpl(
-            instanceManager,
-            new WebChromeClientHostApiImpl.WebChromeClientCreator(),
-            new WebChromeClientFlutterApiImpl(binaryMessenger, instanceManager)));
+        binaryMessenger, webChromeClientHostApiImpl);
     DownloadListenerHostApi.setup(
         binaryMessenger,
         new DownloadListenerHostApiImpl(

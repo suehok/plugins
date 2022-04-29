@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import android.util.Log;
 
 /** Generated class from Pigeon. */
 @SuppressWarnings({"unused", "unchecked", "CodeBlock2Expr", "RedundantSuppression"})
@@ -1822,6 +1823,7 @@ public class GeneratedAndroidWebView {
           });
     }
 
+
     public void onPageFinished(
         Long instanceIdArg, Long webViewInstanceIdArg, String urlArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
@@ -2184,8 +2186,28 @@ public class GeneratedAndroidWebView {
           });
     }
 
+
+
+    public void onScrollYChanged(
+            Long instanceIdArg, Long webViewInstanceIdArg, double yArg, Reply<Void> callback) {
+      Log.d("WebChromeClientFlutterApi", "onScrollChange " + yArg);
+
+      BasicMessageChannel<Object> channel =
+              new BasicMessageChannel<>(
+                      binaryMessenger,
+                      "dev.flutter.pigeon.WebChromeClientFlutterApi.onScrollYChanged",
+                      getCodec());
+      channel.send(
+              new ArrayList<Object>(Arrays.asList(instanceIdArg, webViewInstanceIdArg, yArg)),
+              channelReply -> {
+                callback.reply(null);
+              });
+    }
+
+
     public void onProgressChanged(
         Long instanceIdArg, Long webViewInstanceIdArg, Long progressArg, Reply<Void> callback) {
+
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(
               binaryMessenger,

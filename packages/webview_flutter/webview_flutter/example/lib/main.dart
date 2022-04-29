@@ -126,6 +126,9 @@ class _WebViewExampleState extends State<WebViewExample> {
         onPageStarted: (String url) {
           print('Page started loading: $url');
         },
+        onScrollYChanged: (double y) {
+          print('Page scroll: $y');
+        },
         onPageFinished: (String url) {
           print('Page finished loading: $url');
         },

@@ -15,7 +15,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
-
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.util.Log;
 /**
  * Host api implementation for {@link WebChromeClient}.
  *
@@ -23,7 +25,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClient
  */
 public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
   private final InstanceManager instanceManager;
-  private final WebChromeClientCreator webChromeClientCreator;
+  public final WebChromeClientCreator webChromeClientCreator;
   private final WebChromeClientFlutterApiImpl flutterApi;
 
   /**
@@ -48,6 +50,7 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
     @Override
     public boolean onCreateWindow(
         final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+
       return onCreateWindow(view, resultMsg, new WebView(view.getContext()));
     }
 
@@ -86,13 +89,40 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
               }
               return true;
             }
+
           };
 
       if (onCreateWindowWebView == null) {
         onCreateWindowWebView = new WebView(view.getContext());
       }
       onCreateWindowWebView.setWebViewClient(windowWebViewClient);
+      view.setOnScrollChangeListener(new View.OnScrollChangeListener() {
+        @Override
+        public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+          Log.d("TAG", "onScrollChange " + scrollY);
 
+          if (flutterApi != null) {
+            flutterApi.onScrollYChanged(WebChromeClientImpl.this, view, (double) scrollY, reply -> {});
+          }
+        }
+      });
+
+//      onCreateWindowWebView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+//        int lastScroll=0;
+//        @Override
+//        public void onScrollChanged() {
+//                    Log.d("WebChromeClientHostApiImpl", "onScrollChanged " );
+//
+////          int scrollY = onCreateWindowWebView.getScrollY(); // For ScrollView herzontial use getScrollX()
+////
+////          if (scrollY > lastScroll ) {
+////            Log.e("scroll","down scroll"+scrollY);
+////          } else if (scrollY < lastScroll ) {
+////            Log.e("scroll","up scroll"+scrollY);
+////          }
+////          lastScroll=scrollY;
+//        }
+//      });
       final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
       transport.setWebView(onCreateWindowWebView);
       resultMsg.sendToTarget();
@@ -100,10 +130,13 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
       return true;
     }
 
+
     @Override
     public void onProgressChanged(WebView view, int progress) {
       if (flutterApi != null) {
+
         flutterApi.onProgressChanged(this, view, (long) progress, reply -> {});
+
       }
     }
 
@@ -135,9 +168,11 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
      * @param webViewClient receives forwarded calls from {@link WebChromeClient#onCreateWindow}
      * @return the created {@link DownloadListenerHostApiImpl.DownloadListenerImpl}
      */
+    public  WebChromeClientImpl webChromeClientImpl;
     public WebChromeClientImpl createWebChromeClient(
         WebChromeClientFlutterApiImpl flutterApi, WebViewClient webViewClient) {
-      return new WebChromeClientImpl(flutterApi, webViewClient);
+      webChromeClientImpl = new WebChromeClientImpl(flutterApi, webViewClient);
+      return webChromeClientImpl;
     }
   }
 

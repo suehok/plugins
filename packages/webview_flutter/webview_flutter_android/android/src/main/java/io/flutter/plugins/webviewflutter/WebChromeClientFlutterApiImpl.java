@@ -31,11 +31,23 @@ public class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
 
   /** Passes arguments from {@link WebChromeClient#onProgressChanged} to Dart. */
   public void onProgressChanged(
+
       WebChromeClient webChromeClient, WebView webView, Long progress, Reply<Void> callback) {
+
     super.onProgressChanged(
         instanceManager.getInstanceId(webChromeClient),
         instanceManager.getInstanceId(webView),
         progress,
+        callback);
+  }
+ /** Passes arguments from {@link WebChromeClient#onScrollYChanged} to Dart. */
+  public void onScrollYChanged(
+      WebChromeClient webChromeClient, WebView webView, double y, Reply<Void> callback) {
+
+    super.onScrollYChanged(
+        instanceManager.getInstanceId(webChromeClient),
+        instanceManager.getInstanceId(webView),
+        y,
         callback);
   }
 

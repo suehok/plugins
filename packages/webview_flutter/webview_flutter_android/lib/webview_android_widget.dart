@@ -361,6 +361,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     if (webSettings != null) {
       updateSettings(webSettings);
     }
+    webChromeClient._onScrollY = callbacksHandler.onScrollYChanged;
 
     final String? userAgent = creationParams.userAgent;
     if (userAgent != null) {
@@ -690,9 +691,19 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
 class WebViewAndroidWebChromeClient extends android_webview.WebChromeClient {
   // Changed by WebViewAndroidPlatformController.
   void Function(int progress)? _onProgress;
+  void Function(double progress)? _onScrollY;
 
   @override
+  void onScrollYChanged(android_webview.WebView webView, double progress) {
+    print("dart WebViewAndroidWebChromeClient onScrollYChanged "+progress.toString());
+
+    if (_onScrollY != null) {
+      _onScrollY!(progress);
+    }
+  }
+  @override
   void onProgressChanged(android_webview.WebView webView, int progress) {
+    print("dart WebViewAndroidWebChromeClient onProgressChanged "+progress.toString());
     if (_onProgress != null) {
       _onProgress!(progress);
     }

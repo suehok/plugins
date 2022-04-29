@@ -553,6 +553,9 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
     instance!.onPageFinished(webViewInstance!, url);
   }
 
+
+
+
   @override
   void onPageStarted(int instanceId, int webViewInstanceId, String url) {
     final WebViewClient? instance =
@@ -784,7 +787,27 @@ class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
       webViewInstance != null,
       'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
     );
+    print("WebChromeClientFlutterApiImpl onProgressChanged " + progress.toString());
     instance!.onProgressChanged(webViewInstance!, progress);
+  }
+
+  @override
+  void onScrollYChanged(int instanceId, int webViewInstanceId, double progress) {
+    final WebChromeClient? instance =
+        instanceManager.getInstance(instanceId) as WebChromeClient?;
+    final WebView? webViewInstance =
+        instanceManager.getInstance(webViewInstanceId) as WebView?;
+    assert(
+      instance != null,
+      'InstanceManager does not contain an WebChromeClient with instanceId: $instanceId',
+    );
+    assert(
+      webViewInstance != null,
+      'InstanceManager does not contain an WebView with instanceId: $webViewInstanceId',
+    );
+    print("WebChromeClientFlutterApiImpl onScrollYChanged " + progress.toString());
+
+    instance!.onScrollYChanged(webViewInstance!, progress);
   }
 }
 

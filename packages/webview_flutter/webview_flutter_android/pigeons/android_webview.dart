@@ -158,6 +158,7 @@ abstract class WebViewClientFlutterApi {
   void dispose(int instanceId);
 
   void onPageStarted(int instanceId, int webViewInstanceId, String url);
+  void onScrollYChanged(int instanceId, int webViewInstanceId, double y);
 
   void onPageFinished(int instanceId, int webViewInstanceId, String url);
 
@@ -221,6 +222,8 @@ abstract class WebChromeClientFlutterApi {
   void dispose(int instanceId);
 
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress);
+  void onScrollYChanged(int instanceId, int webViewInstanceId, double progress);
+
 }
 
 @HostApi(dartHostTestHandler: 'TestWebStorageHostApi')

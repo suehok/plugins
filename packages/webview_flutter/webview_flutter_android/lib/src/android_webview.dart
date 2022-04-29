@@ -693,6 +693,7 @@ abstract class WebViewClient {
   /// #fragment_id).
   void onPageStarted(WebView webView, String url) {}
 
+
   // TODO(bparrishMines): Update documentation when WebView.postVisualStateCallback is added.
   /// Notify the host application that a page has finished loading.
   ///
@@ -781,6 +782,7 @@ abstract class WebChromeClient {
 
   /// Notify the host application that a file should be downloaded.
   void onProgressChanged(WebView webView, int progress) {}
+  void onScrollYChanged(WebView webView, double y) {}
 }
 
 /// Encompasses parameters to the [WebViewClient.requestLoading] method.

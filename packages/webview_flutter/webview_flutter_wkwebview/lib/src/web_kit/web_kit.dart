@@ -620,6 +620,14 @@ class WKNavigationDelegate extends NSObject {
     throw UnimplementedError();
   }
 
+  /// Called when navigation from the main frame has started.
+  Future<void> setDidScrollYChanged(
+    void Function(WKWebView webView, double? y)?
+        didScrollYChanged,
+  ) {
+    throw UnimplementedError();
+  }
+
   /// Called when navigation is complete.
   Future<void> setDidFinishNavigation(
     void Function(WKWebView webView, String? url)? didFinishNavigation,

@@ -112,6 +112,9 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   void onPageStarted(String url) {}
 
   @override
+  void onScrollYChanged(String url) {}
+
+  @override
   void onProgress(int progress) {}
 
   @override
