@@ -80,6 +80,7 @@
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
               binaryMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
+
   if (self = [super init]) {
     _viewId = viewId;
 
@@ -119,6 +120,7 @@
 
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
     _webView.UIDelegate = self;
+    _webView.scrollView.delegate  = self;
     _webView.navigationDelegate = _navigationDelegate;
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall *call, FlutterResult result) {
@@ -158,7 +160,21 @@
   return _webView;
 }
 
+- (void)webViewDidStartLoad:(UIWebView *)webView{
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
+}
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+
+}
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    [_channel invokeMethod:@"onScrollYChanged" arguments:@{@"y" : @(scrollView.contentOffset.y)}];
+}
+
 - (void)onMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+    NSLog([call method]);
+
   if ([[call method] isEqualToString:@"updateSettings"]) {
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadFile"]) {

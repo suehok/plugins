@@ -151,21 +151,6 @@ public class WebViewHostApiImpl implements WebViewHostApi {
 
     }
 
-//    @Override
-//    public void setOnScrollChangeListener(View.OnScrollChangeListener   listener){
-//      Log.d("WebViewHostApiImpl", "setOnScrollChangeListener " );
-//
-//    }
-//    @Override
-//    public void setOnScrollChangeListener(View.OnScrollChangeListener   listener){
-//        super.setOnScrollChangeListener(listener);
-//      this.setOnScrollChangeListener(new View.OnScrollChangeListener() {
-//        @Override
-//        public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-//          Log.d("TAG", "onScrollChange " + scrollY);
-//        }
-//      });
-//    }
     @Override
     public void setDownloadListener(DownloadListener listener) {
       super.setDownloadListener(listener);
@@ -363,7 +348,6 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     DisplayManager displayManager =
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
-    Log.d("WebViewHostApiImpl", "create  " );
 
     final WebView webView =
         useHybridComposition
@@ -374,7 +358,6 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     webView.setOnScrollChangeListener(new View.OnScrollChangeListener() {
       @Override
       public void onScrollChange(View view, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-        Log.d("WebViewHostApiImpl", "onScrollChange " + scrollY);
         final WebView webView = (WebView) instanceManager.getInstance(instanceId);
 
         if (flutterApi != null) {
@@ -411,16 +394,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
       String mimeType,
       String encoding,
       String historyUrl) {
-    Log.d("TAG", "loadDataWithBaseUrl " + baseUrl);
 
-    final ObservableWebView webView = (ObservableWebView) instanceManager.getInstance(instanceId);
-
-
-    ((ObservableWebView) webView).setOnScrollChangedCallback(new ObservableWebView.OnScrollChangedCallback() {
-      public void onScroll(int x, int y, int oldx, int oldy) {
-        Log.d("TAG", "onScrollChange " + y);
-      }
-    });
     webView.loadDataWithBaseURL(
         parseNullStringIdentifier(baseUrl),
         data,

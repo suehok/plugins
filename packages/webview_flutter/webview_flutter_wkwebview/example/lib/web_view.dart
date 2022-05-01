@@ -657,13 +657,6 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   }
 
   @override
-  void onScrollYChanged(double y) {
-    if (_webView.onPageStarted != null) {
-      _webView.onScrollYChanged!(y);
-    }
-  }
-
-  @override
   void onPageFinished(String url) {
     if (_webView.onPageFinished != null) {
       _webView.onPageFinished!(url);

@@ -522,6 +522,12 @@ class MockWebViewPlatformCallbacksHandler extends _i1.Mock
   void onProgress(int? progress) =>
       super.noSuchMethod(Invocation.method(#onProgress, [progress]),
           returnValueForMissingStub: null);
+
+  @override
+  void onScrollYChanged(int? y) =>
+      super.noSuchMethod(Invocation.method(#onScrollYChanged, [y]),
+          returnValueForMissingStub: null);
+
   @override
   void onWebResourceError(_i10.WebResourceError? error) =>
       super.noSuchMethod(Invocation.method(#onWebResourceError, [error]),

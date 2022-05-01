@@ -99,30 +99,13 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
       view.setOnScrollChangeListener(new View.OnScrollChangeListener() {
         @Override
         public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-          Log.d("TAG", "onScrollChange " + scrollY);
 
           if (flutterApi != null) {
             flutterApi.onScrollYChanged(WebChromeClientImpl.this, view, (double) scrollY, reply -> {});
           }
         }
       });
-
-//      onCreateWindowWebView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-//        int lastScroll=0;
-//        @Override
-//        public void onScrollChanged() {
-//                    Log.d("WebChromeClientHostApiImpl", "onScrollChanged " );
-//
-////          int scrollY = onCreateWindowWebView.getScrollY(); // For ScrollView herzontial use getScrollX()
-////
-////          if (scrollY > lastScroll ) {
-////            Log.e("scroll","down scroll"+scrollY);
-////          } else if (scrollY < lastScroll ) {
-////            Log.e("scroll","up scroll"+scrollY);
-////          }
-////          lastScroll=scrollY;
-//        }
-//      });
+      
       final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
       transport.setWebView(onCreateWindowWebView);
       resultMsg.sendToTarget();
