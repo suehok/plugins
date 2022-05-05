@@ -394,7 +394,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
       String mimeType,
       String encoding,
       String historyUrl) {
-
+    final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     webView.loadDataWithBaseURL(
         parseNullStringIdentifier(baseUrl),
         data,
